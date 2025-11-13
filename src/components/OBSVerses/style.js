@@ -9,6 +9,12 @@ export const useStyles = makeStyles((theme) => ({
   sup: {
     marginRight: theme.spacing(1 / 2),
   },
+  highlight: {
+    backgroundColor: '#fff59d',
+    color: theme.palette.text.primary,
+    padding: '2px 0',
+    borderRadius: '2px',
+  },
 }));
 
 export default useStyles;

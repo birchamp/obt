@@ -11,6 +11,7 @@ import { useScrollToVerse } from '../../hooks';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 
+import { highlightTextInOBS } from '../../helper';
 import useStyles from './style';
 import { DialogUI } from '../DialogUI';
 
@@ -40,8 +41,16 @@ function OBSContent({
   } = useContext(ReferenceContext);
 
   const {
-    state: { switchObsImage },
+    state: { switchObsImage, obsQuote, obsOccurrence },
   } = useContext(AppContext);
+
+  useEffect(() => {
+    console.log('OBSContent highlight state changed', {
+      verse,
+      obsQuote,
+      obsOccurrence,
+    });
+  }, [verse, obsQuote, obsOccurrence]);
 
   const handleContextOpen = (event) => {
     event.preventDefault();
@@ -145,12 +154,32 @@ function OBSContent({
             )}
             <p>
               <sup className={classes.sup}>{key.toString()}</sup>
-              {text &&
-                text.split('\n').map((el, index) => (
-                  <span style={{ display: index ? 'block' : 'inline' }} key={index}>
-                    {el}
-                  </span>
-                ))}
+              {(() => {
+                const shouldHighlight = obsQuote && key.toString() === verse.toString();
+                const segments = shouldHighlight
+                  ? highlightTextInOBS(text, obsQuote, obsOccurrence, 'obs-highlight')
+                  : [{ type: 'text', text }];
+
+                return segments.flatMap((segment, segIndex) => {
+                  const parts = segment.text.split('\n');
+                  return parts.flatMap((part, partIndex) => {
+                    const keyBase = `${key}-${segIndex}-${partIndex}`;
+                    const content =
+                      segment.type === 'highlight' ? (
+                        <span key={`${keyBase}-content`} className={classes.highlight}>
+                          {part}
+                        </span>
+                      ) : (
+                        <React.Fragment key={`${keyBase}-content`}>{part}</React.Fragment>
+                      );
+
+                    if (partIndex < parts.length - 1) {
+                      return [content, <br key={`${keyBase}-br`} />];
+                    }
+                    return [content];
+                  });
+                });
+              })()}
             </p>
           </Box>
         );
@@ -187,7 +216,7 @@ function OBSContent({
       setVerses(<>{t('No_content')}</>);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [markdown, verse, fontSize, switchObsImage]);
+  }, [markdown, verse, fontSize, switchObsImage, obsQuote, classes]);
 
   return (
     <>

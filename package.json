@@ -43,7 +43,6 @@
     "react-router-dom": "^5.3.0",
     "react-swipeable": "^6.2.1",
     "resource-workspace-rcl": "^2.1.0",
-    "scripture-resources-rcl": "5.2.0",
     "semver": "^7.3.7",
     "tc-ui-toolkit": "^6.2.4",
     "translation-helps-rcl": "3.1.7",
@@ -65,9 +64,9 @@
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "start": "craco --max_old_space_size=8192 start",
+    "start": "NODE_OPTIONS=--openssl-legacy-provider craco --max_old_space_size=8192 start",
     "serve": "serve -s build",
-    "build": "craco --max_old_space_size=8192 build",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider craco --max_old_space_size=8192 build",
     "test": "craco test",
     "eject": "react-scripts eject"
   },

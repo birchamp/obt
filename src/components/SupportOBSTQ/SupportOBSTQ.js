@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 
 import { Card, useContent, useCardState } from 'translation-helps-rcl';
 
+import { AppContext } from '../../context';
 import { SupportContent } from '../SupportContent';
 
 export default function SupportOBSTQ({
@@ -15,6 +16,11 @@ export default function SupportOBSTQ({
   resource,
 }) {
   const [repoType, setRepoType] = useState('tsv');
+
+  const {
+    actions: { setObsQuote, setObsOccurrence },
+  } = useContext(AppContext);
+
   const mdConfig = {
     projectId: bookId,
     listRef: resource.ref ?? 'master',
@@ -57,6 +63,21 @@ export default function SupportOBSTQ({
   } = useCardState({
     items,
   });
+
+  useEffect(() => {
+    // OBS-TQ uses Quote and Occurrence fields for the snippet reference
+    if (item?.Quote) {
+      setObsQuote(item.Quote);
+      const occurrenceValue = parseInt(item?.Occurrence, 10);
+      setObsOccurrence(
+        Number.isFinite(occurrenceValue) && occurrenceValue > 0 ? occurrenceValue : 1
+      );
+    } else {
+      setObsQuote('');
+      setObsOccurrence(0);
+    }
+  }, [item, setObsQuote, setObsOccurrence]);
+
   return (
     <Card
       closeable

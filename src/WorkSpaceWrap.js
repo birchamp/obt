@@ -29,7 +29,7 @@ export default function WorkSpaceWrap() {
   } = useContext(ReferenceContext);
 
   const _selections = useOccurrence({
-    book: bookId,
+    book: bookId === 'obs' ? undefined : bookId, // Skip book loading for OBS as it doesn't have verse structure
     chapter,
     verses: [verse],
     quotes: [{ quote, occurrence: parseInt(occurrence) }],

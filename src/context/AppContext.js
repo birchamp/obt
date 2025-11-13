@@ -8,7 +8,13 @@ import { useTranslation } from 'react-i18next';
 
 import { ReferenceContext } from '../context';
 
-import { getResources, getBookList, checkLSVal, getLayoutType } from '../helper';
+import {
+  getResources,
+  getBookList,
+  checkLSVal,
+  getLayoutType,
+  safeSetItem,
+} from '../helper';
 import {
   defaultTplBible,
   defaultTplOBS,
@@ -99,7 +105,7 @@ export function AppContextProvider({ children }) {
   });
 
   const config = { server };
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   useEffect(() => {
     localStorage.setItem('fontSize', fontSize);
@@ -142,6 +148,12 @@ export function AppContextProvider({ children }) {
   }, [switchWordPopover]);
 
   useEffect(() => {
+    safeSetItem('i18nextLng', currentLanguage);
+    // Note: i18next also saves to localStorage, but we ensure it's synced here too
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentLanguage]);
+
+  useEffect(() => {
     const type = getLayoutType(appConfig.lg);
     const newType = referenceSelected.bookId === 'obs' ? 'obs' : 'bible';
     if (type !== newType) {
@@ -175,6 +187,8 @@ export function AppContextProvider({ children }) {
   }, [openStartDialog]);
   const [quote, setQuote] = useState('');
   const [occurrence, setOccurrence] = useState(0);
+  const [obsQuote, setObsQuote] = useState('');
+  const [obsOccurrence, setObsOccurrence] = useState(0);
   const [selections, setSelections] = useState([{}]);
   const value = {
     state: {
@@ -209,6 +223,8 @@ export function AppContextProvider({ children }) {
       quote,
       selections,
       occurrence,
+      obsQuote,
+      obsOccurrence,
     },
     actions: {
       setTaRef,
@@ -241,6 +257,8 @@ export function AppContextProvider({ children }) {
       setSelections,
       setQuote,
       setOccurrence,
+      setObsQuote,
+      setObsOccurrence,
     },
   };
 

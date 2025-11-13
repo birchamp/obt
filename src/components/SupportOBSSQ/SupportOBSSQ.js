@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 
 import { ReferenceUtils } from 'bible-reference-rcl';
 import { Card, useContent, useCardState } from 'translation-helps-rcl';
 import { useTranslation } from 'react-i18next';
 
+import { AppContext } from '../../context';
 import { ButtonGroupUI, FrontModal, SupportContent } from '../../components';
 
 export default function SupportOBSSQ({
@@ -19,6 +20,11 @@ export default function SupportOBSSQ({
   const [openDialog, setOpenDialog] = React.useState(false);
   const [configFront, setConfigFront] = React.useState({});
   const { t } = useTranslation();
+
+  const {
+    actions: { setQuote },
+  } = useContext(AppContext);
+
   const config = {
     projectId: bookId,
     listRef: resource.ref ?? 'master',
@@ -51,6 +57,17 @@ export default function SupportOBSSQ({
     setItemIndex(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookId, chapter, verse]);
+
+  useEffect(() => {
+    // Extract quote from OBS-SQ item (Question field) and set in AppContext for highlighting
+    if (item?.Question) {
+      setQuote(item.Question);
+    } else {
+      // Clear quote when no item is selected
+      setQuote('');
+    }
+  }, [item?.Question, setQuote]);
+
   return (
     <Card
       closeable

@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 
 import { Card, useContent, useCardState } from 'translation-helps-rcl';
 import { useTranslation } from 'react-i18next';
 
+import { AppContext } from '../../context';
 import { ButtonGroupUI, FrontModal, SupportContent } from '../../components';
 
 export default function SupportOBSTN({
@@ -19,6 +20,10 @@ export default function SupportOBSTN({
   const [configFront, setConfigFront] = useState({});
   const { t } = useTranslation();
   const [repoType, setRepoType] = useState('md');
+
+  const {
+    actions: { setObsQuote, setObsOccurrence },
+  } = useContext(AppContext);
 
   const mdConfig = {
     projectId: bookId,
@@ -91,6 +96,25 @@ export default function SupportOBSTN({
     setItemIndex(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bookId, chapter, verse]);
+
+  useEffect(() => {
+    console.log('OBS-TN highlight hook triggered with item:', item);
+    if (item?.Quote) {
+      console.log('OBS-TN setting highlight data', {
+        quote: item.Quote,
+        occurrence: item?.Occurrence,
+      });
+      setObsQuote(item.Quote);
+      const occurrenceValue = parseInt(item?.Occurrence, 10);
+      setObsOccurrence(
+        Number.isFinite(occurrenceValue) && occurrenceValue > 0 ? occurrenceValue : 1
+      );
+    } else {
+      console.log('OBS-TN clearing highlight data');
+      setObsQuote('');
+      setObsOccurrence(0);
+    }
+  }, [item, setObsQuote, setObsOccurrence]);
   return (
     <Card
       closeable

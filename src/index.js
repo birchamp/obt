@@ -20,6 +20,22 @@ import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 // import reportWebVitals from './reportWebVitals';
 // const App = React.lazy(() => import('./App.js'));
 
+// Global error handler for unhandled promise rejections (e.g., quota errors)
+window.addEventListener('unhandledrejection', (event) => {
+  const error = event.reason;
+  if (
+    error?.message?.includes('quota') ||
+    error?.message?.includes('QuotaExceededError') ||
+    error?.name === 'QuotaExceededError'
+  ) {
+    console.warn(
+      'Storage quota exceeded. The app will continue to work, but caching may be disabled. Consider clearing browser storage.'
+    );
+    // Prevent the error from appearing in console as unhandled
+    event.preventDefault();
+  }
+});
+
 Migrate();
 ReactGA.initialize('G-381M7FJ40V', {
   testMode: !process.env.NODE_ENV || process.env.NODE_ENV === 'development',
