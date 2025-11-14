@@ -5,6 +5,14 @@
 /.yalc
 /.pnp
 .pnp.js
+.pnp.*
+
+# Yarn v2+ (Berry)
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.yarn/install-state.gz.tmp
 
 # testing
 /coverage
